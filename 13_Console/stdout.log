@@ -1,0 +1,20 @@
+0 out: log --
+1 out: log --
+2 out: log --
+3 out: log --
+4 out: log --
+{ nombre: 'Jose',
+  apellidos: 'García',
+  pertenecias: [ 'cartera', 'gafas', 'llaves', 'movil', [length]: 4 ],
+  jugar: 
+   { [Function: jugar]
+     [length]: 2,
+     [name]: 'jugar',
+     [arguments]: null,
+     [caller]: null,
+     [prototype]: jugar { [constructor]: [Circular] } },
+  contacto: 
+   { domicilio: { calle: { nombre: 'nombre calle', numero: 7, cp: 28888 } },
+     telefono: { fijo: 911111, movil: 6000000 } } }
+temporizador-1: 2009.340ms
+temporizador-2: 3000.811ms
