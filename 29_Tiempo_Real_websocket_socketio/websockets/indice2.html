@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cliente websocket</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <!-- Las respuestas del servidor se muestran aqui -->
+        <h2>Mensajes recibidos en el servidor</h2>
+        <div><h3 id="clientes">Pulsa Conectar</h3></div>
+        <div id="mensajes" style="height:200px; overflow:scroll;"></div>
+        <div>
+            <input type="text" id="msj_entrada"/>
+        </div>
+        <div>
+            <button type="button" onclick="abrirWs();" >Conectar</button>
+            <button type="button" onclick="enviar();" >Enviar</button>
+            <button type="button" onclick="cerrarWs();" >Cerrar</button>
+        </div>
+        <!-- Los avisos del navegador se muestran aqui -->
+        <h3>Avisos del navegador</h3>
+        <div id="aviso"></div>
+        <!-- Script para utilizar WebSocket -->
+        <script type="text/javascript">
+        "use strict";
+
+        var ws;
+        var servidor = window.location.hostname; //tu servidor
+        var puerto = 8999; //tu puerto
+        var mensajes = document.getElementById("mensajes");
+        function abrirWs() {
+            if (ws !== undefined && ws.readyState !== ws.CLOSED) {
+                writeAviso("WebSocket con " + servidor + " ya est\xE1 abierto!!!!");
+                return;
+            }
+            // Creamos una nueva instancia de websockets
+            ws = new WebSocket("ws://" + servidor + ":" + puerto);
+            //listeners para los eventos
+            ws.onopen = function (event) {
+                writeAviso("Abierto websocket con " + servidor);
+            };
+            ws.onmessage = function (event) {
+                //escucha mensajes del servidor
+                console.log(event.data);
+                writeResponse(JSON.parse(event.data));
+            };
+            ws.onclose = function (event) {
+                writeAviso("Cerrado websocket con " + servidor);
+            };
+        }
+
+        function enviar() {
+            var text = document.getElementById("msj_entrada").value;
+            ws && ws.readyState !== ws.CLOSED ? ws.send(text) : writeAviso('No hay websocket o está cerrado');
+            msj_entrada.value = '';
+        }
+
+        function cerrarWs() {
+            ws ? ws.close() : writeResponse({ text: 'No hay websocket para cerrar' });
+            location.reload();
+        }
+
+        function writeResponse(data) {
+            if (data.numero && data.text) {
+                clientes.innerHTML = 'Clientes conectados ' + data.numero;
+            }
+            if (data.text) {
+                mensajes.innerHTML += "<br/>" + data.text;
+                var scroll = document.getElementById('mensajes');
+                scroll.scrollTop = scroll.scrollHeight;
+            }
+        }
+        function writeAviso(data) {
+            aviso.innerHTML = data;
+        }
+      </script>
+    </body>
+</html>

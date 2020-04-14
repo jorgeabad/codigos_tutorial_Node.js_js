@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cliente Socket.io</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <body>
+        <!-- Las respuestas del servidor se muestran aqui -->
+        <h2>Mensajes recibidos en el servidor</h2>
+        <div><h3 id="clientes">Pulsa Conectar para entrar en el servidor</h3></div>
+        <div><h3 id="salas">Usuarios en las salas:</h3></div>
+        <div id="mensajes" style="height:200px; overflow:scroll;"></div>
+        <div>
+            <input type="text" id="msj_entrada"/>
+        </div>
+        <div>
+            <button type="button" onclick="abrirWs(socketA);" >Conectar con servidor</button>
+            <button type="button" onclick="cerrarWs(socketA);" >Cerrar Conexión</button>
+            </br>
+            </br>
+            <button type="button" onclick="entrarSala(socketA,'salaA');" >Unirse a Sala A</button>
+            <button type="button" onclick="entrarSala(socketA,'salaB');" >Unirse a Sala B</button>
+</br>
+</br>
+            <button type="button" onclick="enviar(socketA);" >Enviar mensaje</button>
+
+</br>
+            <button type="button" onclick="abrirWs(socketB);" >Mensajes Sistema</button>
+        </div>
+        <!-- Los avisos del navegador se muestran aqui -->
+        <h3>Avisos del navegador</h3>
+        <div id="aviso"></div>
+        <!-- Script para utilizar WebSocket -->
+
+        <script type="text/javascript">
+        "use strict";
+        var mensajes = document.getElementById("mensajes");
+        var socketA = io({autoConnect: false});
+        var socketB = io('/mensajesSistema',{autoConnect: false});
+        var servidor=window.location.hostname;
+        function entrarSala(socket,sala){
+          socket.emit('sala', sala);
+          console.log(socket.sala);
+        }
+        function abrirWs(socket) {
+          console.log(socket);
+            if (socket.id !== undefined) {
+                writeAviso("WebSocket con " + servidor + " ya est\xE1 abierto!!!!");
+                return;
+            }
+            // Creamos una nueva instancia de websockets
+            socket.open();
+
+            socket.on('connect', function() {
+              writeAviso("Conectado con "+servidor+" con id "+socket.id);
+
+            });
+
+
+            socket.on('message', function (datos) {
+                //escucha mensajes del servidor
+                writeResponse(datos);
+            });
+            socket.on('salaA', function (datos) {
+                //escucha mensajes del servidor
+                writeAviso(datos);
+            });
+
+
+            socket.on('disconnect', function (reason) {
+              writeAviso("Cerrado websocket con " + servidor);
+            });
+
+        }
+
+        function enviar(socket) {
+            var text = document.getElementById("msj_entrada").value;
+            socket.id ? socket.emit('message',text) : writeAviso('No hay conexión abierta');
+            msj_entrada.value = '';
+        }
+
+        function cerrarWs(socket) {
+            socket ? socket.close() : writeAviso('No hay websocket para cerrar');
+            location.reload();
+        }
+
+        function writeResponse(data) {
+            if (data.numero && data.text) {
+                clientes.innerHTML = 'Clientes totales conectados al servidor ' + data.numero;
+            }
+            if(data.usersSala){
+            salas.innerHTML = 'Usuarios en las salas: Sala A='+data.usersSala[0]+' Sala B='+data.usersSala[1];
+            }
+            if (data.text) {
+                if(data.tipo){
+                  if(data.tipo==='salaA'){
+                    mensajes.innerHTML += '<p id="salaA" style="color:#FF0000">'+data.text+"</p>";
+                } else{
+                    mensajes.innerHTML += '<p id="salaB" style="color:#00FF00">'+data.text+"</p>";
+                }
+              }else{
+                  mensajes.innerHTML += '<p id="servidor">'+data.text+"</p>";
+              }
+                var scroll = document.getElementById('mensajes');
+                scroll.scrollTop = scroll.scrollHeight;
+            }
+        }
+        function writeAviso(data) {
+            aviso.innerHTML = data;
+        }
+      </script>
+    </body>
+</html>
