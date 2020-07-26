@@ -14,7 +14,7 @@ class StreamLectura extends Readable {
   _read() {
     setTimeout(() => {
       console.log(`\nModo fluido: ${this._readableState.flowing}`);
-      let chunk; //para almacenar fragmento de datos leído.
+      let chunk; //para almacenar fragmento de datos leído..
       //si posición 'i' existe en vector 'datos' chunk toma el valor del elemento 'i'. Si no 'null' a Buffer (no hay mas datos para leer).
       this._datos[this._i] ? (chunk = this._datos[this._i]) : this.push(null);
       if (chunk) {
