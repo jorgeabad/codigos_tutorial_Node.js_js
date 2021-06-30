@@ -62,3 +62,13 @@ console.log(string1.length);// 1
 console.log(string2.length);//1
 console.log(string2.codePointAt(0).toString(16)); //f1
 console.log(string1.codePointAt(0).toString(16)); //f1
+
+
+let cadenaDiacriticos ='áéíóúñüÁÉÍÓÚnaeiou'
+console.log(cadenaDiacriticos.length)//18
+//normalizamos forma descopmuesta y quitamos marcas diacríticas que van desde la `U+0300` a `U+036F`
+cadenaDiacriticos=cadenaDiacriticos.normalize('NFD')
+console.log(cadenaDiacriticos.length)//30
+cadenaDiacriticos=cadenaDiacriticos.replace(/[\u0300-\u036f]/g,"");//aeiounuAEIOUnaeiou
+console.log(cadenaDiacriticos)////aeiounuAEIOUnaeiou
+console.log(cadenaDiacriticos.length)//18
