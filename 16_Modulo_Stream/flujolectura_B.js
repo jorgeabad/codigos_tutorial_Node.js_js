@@ -24,8 +24,11 @@ class StreamLectura extends Readable {
           : `El fragmeto: ${chunk}, añadido al Buffer, limite HWM ${
               this._readableState.highWaterMark
             }!!!`; //false > HWM
-        console.log(aviso);
-        console.log("\n", this._readableState.buffer); //visualiza Buffer
+        console.log(aviso+"\n");
+        console.log('BufferList { head',this._readableState.buffer.head);
+        console.log('tail:',this._readableState.buffer.tail);
+        console.log('length: %d }',this._readableState.length); //visualiza Buffer
+        //if (this._readableState.buffer.head) {console.dir(this._readableState.buffer.head.data)} //visualiza Buffer
         this._i++; //avanzamos en el vector una posición.
       } else {
         console.log("No hay mas datos en la fuente.");
